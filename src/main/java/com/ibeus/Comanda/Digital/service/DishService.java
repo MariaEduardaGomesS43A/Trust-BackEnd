@@ -1,5 +1,7 @@
 package com.ibeus.Comanda.Digital.service;
 
+import com.ibeus.Comanda.Digital.exception.DishNotFoundException;
+import com.ibeus.Comanda.Digital.exception.OrderNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ibeus.Comanda.Digital.model.Dish;
@@ -18,7 +20,7 @@ public class DishService {
     }
 
     public Dish findById(Long id) {
-        return dishRepository.findById(id).orElseThrow(() -> new RuntimeException("Dish not found"));
+        return dishRepository.findById(id).orElseThrow(DishNotFoundException::new);
     }
 
     public Dish create(Dish dish) {

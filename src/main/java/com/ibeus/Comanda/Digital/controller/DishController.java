@@ -1,11 +1,14 @@
 package com.ibeus.Comanda.Digital.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.ibeus.Comanda.Digital.model.Dish;
 import com.ibeus.Comanda.Digital.service.DishService;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -16,26 +19,37 @@ public class DishController {
     @Autowired
     private DishService dishService;
 
+    @Operation(summary = "FindAll", description = "Esse metodo retorna todos os dishes")
     @GetMapping
-    public List<Dish> getAllDishes() {
-        return dishService.findAll();
+    public ResponseEntity<List<Dish>> findAll() {
+        List<Dish> dishes = dishService.findAll();
+        return ResponseEntity.ok().body(dishes);
     }
 
+    @Operation(summary = "FindById", description = "Esse metodo retorna o dish por id")
     @GetMapping("/{id}")
-    public Dish getDishById(@PathVariable Long id) {
-        return dishService.findById(id);
+    public ResponseEntity<Dish> findById(@PathVariable Long id) {
+        Dish dish = dishService.findById(id);
+        return ResponseEntity.ok().body(dish);
     }
 
+    @Operation(summary = "createDish", description = "Esse metodo faz a criação do dish")
     @PostMapping
-    public Dish createDish(@RequestBody Dish dish) {
-        return dishService.create(dish);
+    public ResponseEntity<Void> createDish(@RequestBody Dish dish) {
+        dish = dishService.create(dish);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                .buildAndExpand(dish.getId()).toUri();
+        return ResponseEntity.created(uri).build();
     }
 
+    @Operation(summary = "updateDish", description = "Esse metodo faz a atualização do dish")
     @PutMapping("/{id}")
-    public Dish updateDish(@PathVariable Long id, @RequestBody Dish dish) {
-        return dishService.update(id, dish);
+    public ResponseEntity<Dish> updateDish(@PathVariable Long id, @RequestBody Dish dish) {
+        Dish dishUp = dishService.update(id, dish);
+        return ResponseEntity.ok().body(dishUp);
     }
 
+    @Operation(summary = "deleteDish", description = "Esse metodo faz a deleção do dish")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDish(@PathVariable Long id) {
         dishService.delete(id);
